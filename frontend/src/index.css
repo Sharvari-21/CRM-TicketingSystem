@@ -83,7 +83,6 @@ body {
   .lower-grid         { grid-template-columns: 1fr; }
   .charts-grid        { grid-template-columns: 1fr; }
   .chart-card-wide    { grid-column: auto; }
-  .stats-grid         { grid-template-columns: 1fr 1fr; }
 
   .card-header        { flex-direction: column; align-items: stretch; gap: 10px; }
   .toolbar            { flex-direction: column; }
@@ -101,7 +100,6 @@ body {
 
 /* Mobile (≤ 480px) */
 @media (max-width: 480px) {
-  .stats-grid  { grid-template-columns: 1fr 1fr; gap: 10px; }
   .main        { padding: 72px 12px 24px; }
 
   /* Hide email column in ticket table — too narrow */
@@ -180,6 +178,38 @@ body {
     font-size: 10px;
     color: var(--text3);
   }
+  /* ── STAT CARDS — all breakpoints ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+  width: 100%;
+}
+
+@media (max-width: 960px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .stat-card {
+    padding: 16px 14px;
+    width: 100%;
+    min-width: 0;        /* prevents overflow */
+  }
+
+  .stat-value { font-size: 28px; }
+  .stat-label { font-size: 9px; margin-bottom: 8px; }
+  .stat-icon  { font-size: 18px; right: 10px; top: 12px; }
+}
 
   /* Toolbar stacks on mobile */
   .card-header  { flex-direction: column; align-items: stretch; }
@@ -192,6 +222,45 @@ body {
 
   /* Banner button full-width on very small screens */
   .page-header-content { flex-direction: column; align-items: flex-start; gap: 12px; padding: 18px; }
+}
+/* ── BANNER: mobile layout ── */
+@media (max-width: 600px) {
+  .page-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px;
+    min-height: unset;
+  }
+
+  /* Button should NOT be full width in the banner */
+  .page-header-content .btn-primary {
+    width: auto !important;
+    align-self: flex-start;
+  }
+
+  /* Stat cards — equal 2-col grid, consistent sizing */
+  
+
+  .stat-card {
+    padding: 16px 14px;
+  }
+
+  .stat-value {
+    font-size: 28px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+    margin-bottom: 8px;
+  }
+
+  /* Stat icon — scale down so it doesn't bleed */
+  .stat-icon {
+    font-size: 18px;
+    right: 10px;
+    top: 12px;
+  }
 }
 /* ────────────────────────────────────────────
    AUTH
@@ -423,7 +492,6 @@ select.form-input { cursor: pointer; }
   .sidebar-logout-btn { padding: 8px; width: 36px; justify-content: center; }
 
   .main { padding: 20px 16px; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .detail-grid { grid-template-columns: 1fr; }
   .form-row    { grid-template-columns: 1fr; }
 }
@@ -529,7 +597,6 @@ select.form-input { cursor: pointer; }
   .sidebar-drawer .sidebar-logout-btn { width: 100%; padding: 6px 12px; }
 
   .main { margin-left: 0; padding: 72px 16px 24px; }
-  .stats-grid  { grid-template-columns: 1fr 1fr; }
   .detail-grid { grid-template-columns: 1fr; }
   .ticket-layout { grid-template-columns: 1fr; }
 }
@@ -656,12 +723,6 @@ select.form-input { cursor: pointer; }
 /* ────────────────────────────────────────────
    STAT CARDS
 ──────────────────────────────────────────── */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 28px;
-}
 
 .stat-card {
   background: var(--surface);
@@ -1062,30 +1123,6 @@ tbody td { padding: 13px 16px; font-size: 12px; color: var(--text2); vertical-al
 
 .page-enter { animation: fadeUp 0.25s ease; }
 
-/* ────────────────────────────────────────────
-   RESPONSIVE
-──────────────────────────────────────────── */
-@media (max-width: 960px) {
-  :root { --sidebar-w: 58px; }
-  .sidebar-logo .wordmark,
-  .sidebar-logo .tagline,
-  .nav-item span,
-  .nav-section-label,
-  .sidebar-footer { display: none; }
-  .main { padding: 20px 16px; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .detail-grid { grid-template-columns: 1fr; }
-  .form-row { grid-template-columns: 1fr; }
-}
-@media (max-width: 560px) {
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .card-header { flex-direction: column; align-items: stretch; }
-}
-
-/* ────────────────────────────────────────────
-   APPEND THIS TO YOUR EXISTING index.css
-   (or @import it as a separate file)
-──────────────────────────────────────────── */
 
 /* ── LUCIDE ICON HELPERS ── */
 .title-icon {
