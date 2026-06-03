@@ -4,7 +4,8 @@ A modern full-stack CRM Ticketing System built with the MERN stack to streamline
 
 ## 🚀 Live Demo
 
-Frontend: [Add Frontend URL]
+Frontend:
+https://crm-ticketing-system-mocha.vercel.app/
 
 Backend API:
 https://crm-backend-2pqs.onrender.com
