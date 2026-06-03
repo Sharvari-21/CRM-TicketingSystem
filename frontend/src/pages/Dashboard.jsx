@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Ticket, CircleDot, Loader2, CheckCircle2,
-  Plus, ArrowRight, Inbox, TrendingUp, Activity, Clock,
+  Plus, ArrowRight, Inbox, TrendingUp, Activity, Clock, PieChart as PieIcon,
 } from 'lucide-react'
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer,
+  Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from 'recharts'
 import Sidebar from '../components/Sidebar'
 import StatusBadge from '../components/StatusBadge'
@@ -61,6 +61,35 @@ const CustomTooltip = ({ active, payload, label }) => {
           <b>{p.value}</b>
         </div>
       ))}
+    </div>
+  )
+}
+
+/* ─── donut center label ────────────────────────────── */
+const DonutCenterLabel = ({ cx, cy, total }) => (
+  <>
+    <text x={cx} y={cy - 8} textAnchor="middle" dominantBaseline="middle"
+      style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 26, fontWeight: 500, fill: 'var(--text)', letterSpacing: '-1px' }}>
+      {total}
+    </text>
+    <text x={cx} y={cy + 14} textAnchor="middle" dominantBaseline="middle"
+      style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fill: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500 }}>
+      Total
+    </text>
+  </>
+)
+
+/* ─── custom donut tooltip ─────────────────────────── */
+const DonutTooltip = ({ active, payload }) => {
+  if (!active || !payload?.length) return null
+  const { name, value } = payload[0]
+  return (
+    <div className="chart-tooltip">
+      <div className="ct-row">
+        <span className="ct-dot" style={{ background: payload[0].payload.fill }} />
+        <span>{name}</span>
+        <b>{value}</b>
+      </div>
     </div>
   )
 }
@@ -125,35 +154,45 @@ export default function Dashboard() {
     { cls: 's-closed',   label: 'Closed',        value: stats.closed,     icon: <CheckCircle2 size={22} /> },
   ]
 
+  // Donut chart data derived from stats
+  const donutData = [
+    { name: 'Open',        value: stats.open,       fill: '#B8863A' },
+    { name: 'In Progress', value: stats.inProgress, fill: '#4A7FA5' },
+    { name: 'Closed',      value: stats.closed,     fill: '#4E8C6A' },
+  ].filter(d => d.value > 0)
+
+  // Fallback when no tickets yet — show placeholder slice
+  const donutDisplay = donutData.length > 0 ? donutData : [{ name: 'No tickets', value: 1, fill: '#E8E3DC' }]
+
   return (
     <div className="app-shell">
       <Sidebar />
       <main className="main page-enter">
 
         {/* ── Page header ── */}
-<div className="page-header page-header-banner">
-  <img
-    src="/images/team-puzzle.jpg"
-    alt=""
-    aria-hidden="true"
-    className="page-header-bg"
-  />
-  <div className="page-header-overlay" />
-  <div className="page-header-content">
-    <div>
-      <div className="page-title page-title-light">
-        <LayoutDashboard size={20} className="title-icon" />
-        Dashboard
-      </div>
-      <div className="page-sub page-sub-light">Overview of your support system</div>
-    </div>
-    <div style={{ flexShrink: 0 }}>
-  <button className="btn btn-primary" onClick={() => navigate('/tickets/new')}>
-    + New Ticket
-  </button>
-</div>
-  </div>
-</div>
+        <div className="page-header page-header-banner">
+          <img
+            src="/images/team-puzzle.jpg"
+            alt=""
+            aria-hidden="true"
+            className="page-header-bg"
+          />
+          <div className="page-header-overlay" />
+          <div className="page-header-content">
+            <div>
+              <div className="page-title page-title-light">
+                <LayoutDashboard size={20} className="title-icon" />
+                Dashboard
+              </div>
+              <div className="page-sub page-sub-light">Overview of your support system</div>
+            </div>
+            <div style={{ flexShrink: 0 }}>
+              <button className="btn btn-primary" onClick={() => navigate('/tickets/new')}>
+                + New Ticket
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* ── Stat cards ── */}
         <div className="stats-grid">
@@ -168,10 +207,10 @@ export default function Dashboard() {
 
         {/* ── Charts row ── */}
         {!loading && (
-          <div className="charts-grid">
+          <div className="charts-grid charts-grid-3col">
 
-            {/* Ticket volume trend */}
-            <div className="card chart-card">
+            {/* Ticket Volume trend — full width spanning 2 cols */}
+            <div className="card chart-card chart-span-2">
               <div className="card-header">
                 <div className="card-title">
                   <TrendingUp size={15} className="card-title-icon" />
@@ -183,25 +222,29 @@ export default function Dashboard() {
                   <div className="chart-empty">No data for the past 7 days</div>
                 ) : (
                   <>
-                    <ResponsiveContainer width="100%" height={200}>
+                    <ResponsiveContainer width="100%" height={210}>
                       <AreaChart data={trendData} margin={{ top: 10, right: 16, left: -20, bottom: 0 }}>
                         <defs>
                           <linearGradient id="gOpen" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%"  stopColor="#D97706" stopOpacity={0.18} />
+                            <stop offset="5%"  stopColor="#D97706" stopOpacity={0.22} />
                             <stop offset="95%" stopColor="#D97706" stopOpacity={0} />
                           </linearGradient>
                           <linearGradient id="gClosed" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%"  stopColor="#16A34A" stopOpacity={0.18} />
+                            <stop offset="5%"  stopColor="#16A34A" stopOpacity={0.22} />
                             <stop offset="95%" stopColor="#16A34A" stopOpacity={0} />
+                          </linearGradient>
+                          <linearGradient id="gProgress" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%"  stopColor="#2563EB" stopOpacity={0.14} />
+                            <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
                           </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#EAECF0" vertical={false} />
                         <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
                         <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Area type="monotone" dataKey="open"       name="Open"        stroke="#D97706" strokeWidth={2} fill="url(#gOpen)"   dot={false} activeDot={{ r: 4 }} />
-                        <Area type="monotone" dataKey="inProgress" name="In Progress" stroke="#2563EB" strokeWidth={2} fill="none"          dot={false} activeDot={{ r: 4 }} strokeDasharray="4 2" />
-                        <Area type="monotone" dataKey="closed"     name="Closed"      stroke="#16A34A" strokeWidth={2} fill="url(#gClosed)" dot={false} activeDot={{ r: 4 }} />
+                        <Area type="monotone" dataKey="open"       name="Open"        stroke="#D97706" strokeWidth={2} fill="url(#gOpen)"     dot={false} activeDot={{ r: 4 }} />
+                        <Area type="monotone" dataKey="inProgress" name="In Progress" stroke="#2563EB" strokeWidth={2} fill="url(#gProgress)" dot={false} activeDot={{ r: 4 }} strokeDasharray="4 2" />
+                        <Area type="monotone" dataKey="closed"     name="Closed"      stroke="#16A34A" strokeWidth={2} fill="url(#gClosed)"   dot={false} activeDot={{ r: 4 }} />
                       </AreaChart>
                     </ResponsiveContainer>
                     <div className="chart-legend">
@@ -214,8 +257,70 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Daily resolution bar chart */}
-            <div className="card chart-card chart-card-wide">
+            {/* Status Donut chart */}
+            <div className="card chart-card">
+              <div className="card-header">
+                <div className="card-title">
+                  <PieIcon size={15} className="card-title-icon" />
+                  Status Breakdown
+                </div>
+              </div>
+              <div className="chart-body chart-body-donut">
+                <ResponsiveContainer width="100%" height={210}>
+                  <PieChart>
+                    <Pie
+                      data={donutDisplay}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={62}
+                      outerRadius={88}
+                      paddingAngle={donutData.length > 1 ? 3 : 0}
+                      dataKey="value"
+                      strokeWidth={0}
+                      animationBegin={0}
+                      animationDuration={800}
+                    >
+                      {donutDisplay.map((entry, i) => (
+                        <Cell key={i} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<DonutTooltip />} />
+                    {donutData.length > 0 && (
+                      <text>
+                        <DonutCenterLabel cx="50%" cy={105} total={stats.total} />
+                      </text>
+                    )}
+                  </PieChart>
+                </ResponsiveContainer>
+
+                {/* Legend rows */}
+                <div className="donut-legend">
+                  {[
+                    { label: 'Open',        value: stats.open,       color: '#B8863A', bg: 'var(--yellow-bg)' },
+                    { label: 'In Progress', value: stats.inProgress, color: '#4A7FA5', bg: 'var(--blue-bg)' },
+                    { label: 'Closed',      value: stats.closed,     color: '#4E8C6A', bg: 'var(--green-bg)' },
+                  ].map(row => (
+                    <div key={row.label} className="dl-row">
+                      <span className="dl-dot" style={{ background: row.color }} />
+                      <span className="dl-label">{row.label}</span>
+                      <span className="dl-bar-wrap">
+                        <span
+                          className="dl-bar"
+                          style={{
+                            width: stats.total > 0 ? `${Math.round((row.value / stats.total) * 100)}%` : '0%',
+                            background: row.color,
+                          }}
+                        />
+                      </span>
+                      <span className="dl-val" style={{ color: row.color }}>{row.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Daily Resolution bar chart — full row */}
+            <div className="card chart-card chart-span-3">
               <div className="card-header">
                 <div className="card-title">
                   <Activity size={15} className="card-title-icon" />
@@ -247,6 +352,7 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
+
           </div>
         )}
 
