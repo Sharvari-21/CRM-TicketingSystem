@@ -213,7 +213,8 @@ npm run dev
 
 
 ### Ticket Details
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/d23149a8-9330-4493-b431-fafba7002e31" />
+<img width="1898" height="1148" alt="image" src="https://github.com/user-attachments/assets/a3600e64-80d9-4076-bffa-8d1ceccbeeec" />
+
 
 ---
 
