@@ -258,7 +258,7 @@ export default function Dashboard() {
             </div>
 
             {/* Status Donut chart */}
-            <div className="card chart-card">
+            <div className="card chart-card chart-span-3">
               <div className="card-header">
                 <div className="card-title">
                   <PieIcon size={15} className="card-title-icon" />
